@@ -30,7 +30,7 @@ func SaveLastList(events []calendar.Event) {
 	for i, e := range events {
 		ids[i] = e.ID
 	}
-	_ = os.WriteFile(lastListPath(), []byte(strings.Join(ids, "\n")+"\n"), 0644)
+	_ = os.WriteFile(lastListPath(), []byte(strings.Join(ids, "\n")+"\n"), 0o600)
 }
 
 // LookupRowNumber returns the full event ID for a 1-based row number
@@ -127,10 +127,10 @@ func printEventsTable(events []calendar.Event, w io.Writer) {
 			title = title + " " + color.HiCyanString("↻")
 		}
 
-		t.Append(fmt.Sprintf("%d", i+1), dateStr, timeStr, title, calName, loc, dur)
+		_ = t.Append(fmt.Sprintf("%d", i+1), dateStr, timeStr, title, calName, loc, dur)
 	}
 
-	t.Render()
+	_ = t.Render()
 }
 
 // Events — JSON
@@ -254,10 +254,10 @@ func printCalendarsTable(calendars []calendar.Calendar, w io.Writer) {
 		if c.ReadOnly {
 			readOnly = "yes"
 		}
-		t.Append(c.Title, c.Source, c.Type.String(), c.Color, readOnly)
+		_ = t.Append(c.Title, c.Source, c.Type.String(), c.Color, readOnly)
 	}
 
-	t.Render()
+	_ = t.Render()
 }
 
 // Calendars — JSON

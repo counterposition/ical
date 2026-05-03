@@ -424,7 +424,7 @@ func runAddInteractive() error {
 
 	// Parse alerts
 	if strings.TrimSpace(alertStr) != "" {
-		for _, a := range strings.Split(alertStr, ",") {
+		for a := range strings.SplitSeq(alertStr, ",") {
 			a = strings.TrimSpace(a)
 			if a == "" {
 				continue
@@ -474,10 +474,7 @@ func runAddInteractive() error {
 // explicitly since this is shared by add and update, which track the zone in
 // different globals.
 func buildRecurrenceRule(timezone string) (eventkit.RecurrenceRule, error) {
-	interval := addRepeatInterval
-	if interval < 1 {
-		interval = 1
-	}
+	interval := max(addRepeatInterval, 1)
 
 	freq := strings.ToLower(addRepeat)
 	if addRepeatDays != "" && freq != "weekly" {
