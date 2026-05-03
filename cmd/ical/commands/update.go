@@ -397,12 +397,12 @@ func runUpdateInteractive(client *calendar.Client, event *calendar.Event) error 
 			input.Alerts = &empty
 		} else {
 			alerts := make([]calendar.Alert, 0)
-			for a := range strings.SplitSeq(alertStr, ",") {
-				a = strings.TrimSpace(a)
-				if a == "" {
+			for rawAlert := range strings.SplitSeq(alertStr, ",") {
+				alert := strings.TrimSpace(rawAlert)
+				if alert == "" {
 					continue
 				}
-				d, err := dateparser.ParseAlertDuration(a)
+				d, err := dateparser.ParseAlertDuration(alert)
 				if err != nil {
 					return err
 				}

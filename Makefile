@@ -19,7 +19,14 @@ test: ## Run tests
 	go test ./... -v
 
 lint: ## Run golangci-lint
-	golangci-lint run ./...
+	@if command -v mise >/dev/null 2>&1; then \
+		mise x -- golangci-lint run ./...; \
+	elif command -v golangci-lint >/dev/null 2>&1; then \
+		golangci-lint run ./...; \
+	else \
+		echo "golangci-lint not found; install mise to use pinned tools from mise.toml" >&2; \
+		exit 127; \
+	fi
 
 release: ## Build release tarballs for GitHub upload (arm64 + amd64)
 	@mkdir -p bin

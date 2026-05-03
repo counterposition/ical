@@ -424,12 +424,12 @@ func runAddInteractive() error {
 
 	// Parse alerts
 	if strings.TrimSpace(alertStr) != "" {
-		for a := range strings.SplitSeq(alertStr, ",") {
-			a = strings.TrimSpace(a)
-			if a == "" {
+		for rawAlert := range strings.SplitSeq(alertStr, ",") {
+			alert := strings.TrimSpace(rawAlert)
+			if alert == "" {
 				continue
 			}
-			d, err := dateparser.ParseAlertDuration(a)
+			d, err := dateparser.ParseAlertDuration(alert)
 			if err != nil {
 				return err
 			}

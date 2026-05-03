@@ -451,36 +451,36 @@ func parseTrigger(val string) (time.Duration, error) {
 	}
 
 	// Handle day portion: P1D, P1DT2H30M, etc.
-	if idx := strings.Index(s, "D"); idx >= 0 {
-		n, err := strconv.Atoi(s[:idx])
+	if before, after, ok := strings.Cut(s, "D"); ok {
+		n, err := strconv.Atoi(before)
 		if err != nil {
 			return 0, fmt.Errorf("invalid trigger days %q: %w", val, err)
 		}
 		total += time.Duration(n) * 24 * time.Hour
-		s = s[idx+1:]
+		s = after
 	}
 
 	// Handle time portion after "T"
 	s = strings.TrimPrefix(s, "T")
 
 	// Parse hours
-	if idx := strings.Index(s, "H"); idx >= 0 {
-		n, err := strconv.Atoi(s[:idx])
+	if before, after, ok := strings.Cut(s, "H"); ok {
+		n, err := strconv.Atoi(before)
 		if err != nil {
 			return 0, fmt.Errorf("invalid trigger hours %q: %w", val, err)
 		}
 		total += time.Duration(n) * time.Hour
-		s = s[idx+1:]
+		s = after
 	}
 
 	// Parse minutes
-	if idx := strings.Index(s, "M"); idx >= 0 {
-		n, err := strconv.Atoi(s[:idx])
+	if before, after, ok := strings.Cut(s, "M"); ok {
+		n, err := strconv.Atoi(before)
 		if err != nil {
 			return 0, fmt.Errorf("invalid trigger minutes %q: %w", val, err)
 		}
 		total += time.Duration(n) * time.Minute
-		s = s[idx+1:]
+		s = after
 	}
 
 	// Parse seconds

@@ -52,6 +52,15 @@ make build
 # Binary at ./bin/ical
 ```
 
+**Development checks:**
+
+```bash
+make test
+make lint
+```
+
+`make lint` uses pinned tools from `mise.toml` when `mise` is installed, and falls back to `golangci-lint` on `PATH`.
+
 > **Requires macOS.** Uses cgo + EventKit. On first run, macOS will prompt for Calendar access.
 
 ## Quick Start
