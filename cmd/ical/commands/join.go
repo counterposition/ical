@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"sort"
@@ -71,9 +72,16 @@ full/partial event ID, same as 'ical show'.`,
 			return nil
 		}
 
+		if err := validateConferenceURL(event.ConferenceURL); err != nil {
+			return err
+		}
+
 		start := event.StartDate.In(time.Local)
 		fmt.Fprintf(os.Stderr, "Joining %q (%s)\n", event.Title, start.Format("Mon 15:04"))
 		fmt.Println(event.ConferenceURL)
+		// #nosec G204 -- validateConferenceURL above restricts the link to an
+		// http(s) URL, so a crafted invite can't smuggle an "open" flag or a
+		// file:// / custom-scheme payload onto the command line.
 		if err := exec.Command("open", event.ConferenceURL).Run(); err != nil {
 			return fmt.Errorf("failed to open conference link: %w", err)
 		}
@@ -86,6 +94,21 @@ func init() {
 	joinCmd.Flags().IntVarP(&joinDays, "days", "d", 7, "How many days ahead to look for the next meeting")
 
 	rootCmd.AddCommand(joinCmd)
+}
+
+// validateConferenceURL guards the exec.Command("open", …) call below: it
+// ensures the link parses as an http(s) URL so a crafted calendar invite can't
+// pass a leading "-" (interpreted by open as a flag) or a file:// / custom
+// scheme that would launch an arbitrary handler.
+func validateConferenceURL(raw string) error {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return fmt.Errorf("invalid conference link %q: %w", raw, err)
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return fmt.Errorf("refusing to open conference link %q: unsupported scheme %q", raw, u.Scheme)
+	}
+	return nil
 }
 
 // nextJoinableEvent picks the event whose conference link the user most
