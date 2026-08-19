@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/BRO3886/go-eventkit/calendar"
-	"github.com/BRO3886/ical/internal/ui"
 	"github.com/charmbracelet/huh"
+	"github.com/counterposition/ical/internal/ui"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )

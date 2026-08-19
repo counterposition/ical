@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/BRO3886/ical/internal/update"
+	"github.com/counterposition/ical/internal/update"
 	"github.com/fatih/color"
 )
 
@@ -437,6 +437,9 @@ func TestPrintNoticesUpdateAvailable(t *testing.T) {
 	}
 	if !strings.Contains(out, "v0.13.0") {
 		t.Errorf("output %q does not name the latest version", out)
+	}
+	if !strings.Contains(out, "go install github.com/counterposition/ical/cmd/ical@latest") {
+		t.Errorf("output %q does not contain the fork update command", out)
 	}
 	if strings.Contains(out, "Installed skills are outdated") {
 		t.Errorf("output %q has a staleness notice for up-to-date skills", out)

@@ -1,4 +1,4 @@
-module github.com/BRO3886/ical
+module github.com/counterposition/ical
 
 go 1.24.5
 

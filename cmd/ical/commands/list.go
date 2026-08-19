@@ -8,7 +8,7 @@ import (
 
 	"github.com/BRO3886/go-eventkit/calendar"
 	"github.com/BRO3886/go-eventkit/dateparser"
-	"github.com/BRO3886/ical/internal/ui"
+	"github.com/counterposition/ical/internal/ui"
 	"github.com/spf13/cobra"
 )
 

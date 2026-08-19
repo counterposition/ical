@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/BRO3886/ical/cmd/ical/commands"
+	"github.com/counterposition/ical/cmd/ical/commands"
 )
 
 // Set by ldflags at build time.

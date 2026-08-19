@@ -199,6 +199,8 @@ func TestCompareVersions(t *testing.T) {
 		{"v1.0.0", "v2.0.0", true},
 		{"v0.9.0", "v0.10.0", true},
 		{"v0.10.0", "v0.9.0", false},
+		{"v0.12.2", "v0.100.0", true}, // fork release epoch
+		{"v0.100.0", "v0.12.2", false},
 		{"0.4.0", "0.5.0", true},       // no v prefix
 		{"v0.4.0", "0.5.0", true},      // mixed prefix
 		{"dev", "v0.5.0", false},       // invalid current

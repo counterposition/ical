@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	ical "github.com/BRO3886/ical"
-	"github.com/BRO3886/ical/internal/skills"
 	"github.com/charmbracelet/huh"
+	ical "github.com/counterposition/ical"
+	"github.com/counterposition/ical/internal/skills"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )

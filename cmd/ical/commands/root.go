@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/BRO3886/ical/internal/skills"
-	"github.com/BRO3886/ical/internal/update"
+	"github.com/counterposition/ical/internal/skills"
+	"github.com/counterposition/ical/internal/update"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -150,8 +150,7 @@ func printNotices(w io.Writer, version string, result *update.Result, homeDir st
 		yellow := color.New(color.FgYellow)
 		fmt.Fprintln(w)
 		yellow.Fprintf(w, "A new version of ical is available: %s → %s\n", version, result.Latest)
-		// This fork ships no installer or prebuilt releases; updating means rebuilding.
-		fmt.Fprintf(w, "Update: git pull && make build in your ical checkout\n")
+		fmt.Fprintln(w, "Update: go install github.com/counterposition/ical/cmd/ical@latest")
 	}
 
 	// Check skills staleness (local only, no HTTP)
