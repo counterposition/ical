@@ -150,7 +150,8 @@ func printNotices(w io.Writer, version string, result *update.Result, homeDir st
 		yellow := color.New(color.FgYellow)
 		fmt.Fprintln(w)
 		yellow.Fprintf(w, "A new version of ical is available: %s → %s\n", version, result.Latest)
-		fmt.Fprintf(w, "Update: curl -fsSL https://ical.sidv.dev/install | bash\n")
+		// This fork ships no installer or prebuilt releases; updating means rebuilding.
+		fmt.Fprintf(w, "Update: git pull && make build in your ical checkout\n")
 	}
 
 	// Check skills staleness (local only, no HTTP)

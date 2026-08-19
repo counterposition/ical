@@ -139,13 +139,13 @@ latest=v0.5.0
 
 1. Read `~/.cache/ical/update-check`. If `checked_at` is less than 24 hours ago, use cached `latest` value — no HTTP request.
 2. If stale or missing, spawn a goroutine that:
-   - Hits `https://api.github.com/repos/BRO3886/ical/releases/latest` (no auth needed)
+   - Hits `https://api.github.com/repos/counterposition/ical/releases/latest` (no auth needed)
    - Parses the `tag_name` field
    - Writes the result + timestamp to `~/.cache/ical/update-check`
 3. In `PersistentPostRun`, if the goroutine completed and `latest > current`:
    ```
    A new version of ical is available: v0.4.0 → v0.5.0
-   Update: curl -fsSL https://ical.sidv.dev/install | bash
+   Update: git pull && make build in your ical checkout
    ```
    Printed to **stderr** so it doesn't interfere with piped output (e.g., `ical ls -o json | jq`).
 
@@ -163,7 +163,7 @@ When skills are installed but their `.ical-version` doesn't match the running bi
 
 ```
 A new version of ical is available: v0.4.0 → v0.5.0
-Update: curl -fsSL https://ical.sidv.dev/install | bash
+Update: git pull && make build in your ical checkout
 
 Installed skills are outdated (v0.4.0). Run: ical skills install
 ```

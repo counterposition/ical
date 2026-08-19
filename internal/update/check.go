@@ -13,7 +13,10 @@ import (
 )
 
 const (
-	githubRepo   = "BRO3886/ical"
+	// githubRepo is this fork, not upstream — an update notice must point at a
+	// release the user can actually install. The fork has no releases yet, so
+	// the check finds nothing and stays silent until the first one is cut.
+	githubRepo   = "counterposition/ical"
 	cacheTTL     = 24 * time.Hour
 	checkTimeout = 2 * time.Second
 )
