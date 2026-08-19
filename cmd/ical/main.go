@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"runtime/debug"
 
 	"github.com/counterposition/ical/cmd/ical/commands"
 )
@@ -21,8 +22,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	commands.SetVersionInfo(version, commit, date)
+	buildInfo, _ := debug.ReadBuildInfo()
+	commands.SetVersionInfo(resolveVersion(version, buildInfo), commit, date)
 	if err := commands.Execute(); err != nil {
 		os.Exit(1)
 	}
+}
+
+func resolveVersion(injected string, buildInfo *debug.BuildInfo) string {
+	if injected != "" && injected != "dev" {
+		return injected
+	}
+	if buildInfo != nil && buildInfo.Main.Version != "" && buildInfo.Main.Version != "(devel)" {
+		return buildInfo.Main.Version
+	}
+	return injected
 }
