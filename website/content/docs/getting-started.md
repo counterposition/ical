@@ -1,69 +1,62 @@
 ---
 title: "Getting Started"
-description: "Install ical and start managing your macOS Calendar from the terminal. Supports Homebrew, curl install, go install, and manual download on macOS."
-keywords: ["install ical macOS", "brew install ical", "homebrew ical", "macOS Calendar CLI install", "go install ical", "ical getting started", "EventKit CLI setup", "Claude Code skill install", "Codex CLI skill install", "OpenClaw skill"]
+description: "Build ical from source and start managing your macOS Calendar from the terminal. This fork installs by building from source on macOS."
+keywords: ["install ical macOS", "build ical from source", "macOS Calendar CLI install", "ical getting started", "EventKit CLI setup", "Claude Code skill install", "Codex CLI skill install", "OpenClaw skill"]
 weight: 1
 ---
 
 ## Requirements
 
 - **macOS** (any recent version)
-- **Go 1.24+** (for `go install`)
+- **Go 1.24+**
+- **Xcode Command Line Tools** (`xcode-select --install`)
 - Calendar access permission (macOS will prompt on first run)
 
 ical uses cgo to compile native EventKit bindings directly into the binary. It does not work on Linux or Windows.
 
 ## Installation
 
-### Homebrew (recommended)
+This is a fork of [BRO3886/ical](https://github.com/BRO3886/ical), maintained at
+[counterposition/ical](https://github.com/counterposition/ical). It publishes **no binary releases,
+no Homebrew tap, and no install script** — build it from source.
 
 ```bash
-brew tap BRO3886/tap
-brew install ical
-```
-
-Update later with `brew upgrade ical`.
-
-### Quick install script
-
-```bash
-curl -fsSL https://ical.sidv.dev/install | bash
-```
-
-Downloads the latest release binary and installs to `/usr/local/bin`.
-
-### Via go install
-
-```bash
-go install github.com/BRO3886/ical/cmd/ical@latest
-```
-
-> Requires Go 1.21+ and Xcode Command Line Tools (`xcode-select --install`).
-
-### Manual download
-
-Apple Silicon:
-```bash
-curl -LO https://github.com/BRO3886/ical/releases/latest/download/ical-darwin-arm64.tar.gz
-tar xzf ical-darwin-arm64.tar.gz
-sudo mv ical /usr/local/bin/
-```
-
-Intel:
-```bash
-curl -LO https://github.com/BRO3886/ical/releases/latest/download/ical-darwin-amd64.tar.gz
-tar xzf ical-darwin-amd64.tar.gz
-sudo mv ical /usr/local/bin/
-```
-
-### From source
-
-```bash
-git clone https://github.com/BRO3886/ical.git
+git clone https://github.com/counterposition/ical.git
 cd ical
 make build
 # Binary at ./bin/ical
 ```
+
+Then put it on your `PATH` — either copy the built binary:
+
+```bash
+sudo cp bin/ical /usr/local/bin/ical
+```
+
+...or install it to `$(go env GOPATH)/bin` instead:
+
+```bash
+make install
+```
+
+> `go install github.com/counterposition/ical/cmd/ical@latest` does **not** work: `go.mod` still
+> declares the module as `github.com/BRO3886/ical`, so Go rejects the module-path mismatch.
+
+### Want the upstream build instead?
+
+Upstream's Homebrew tap, `curl | bash` installer, `go install` path, and release tarballs install
+*upstream's* build, not this fork. See
+[upstream's install instructions](https://github.com/BRO3886/ical#install).
+
+### Development checks
+
+```bash
+make test
+make lint
+```
+
+`make lint` uses pinned tools from `mise.toml` when `mise` is installed, and falls back to
+`golangci-lint` on `PATH`.
 
 ## First Run
 

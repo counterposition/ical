@@ -105,27 +105,21 @@ EOF
 
 ## Install / Update
 
-Recommended — Homebrew:
+This fork ships no prebuilt binaries — build from source (macOS, Go 1.24+, Xcode CLT):
 
 ```bash
-brew upgrade ical
+git clone https://github.com/counterposition/ical.git
+cd ical
+make build
 ```
 
-First time? `brew tap BRO3886/tap && brew install ical`.
-
-Or via the install script:
+Already have a checkout? Update in place:
 
 ```bash
-curl -fsSL https://ical.sidv.dev/install | bash
+git pull && make build
 ```
 
-Or via Go:
-
-```bash
-go install github.com/BRO3886/ical/cmd/ical@v<VERSION>
-```
-
-**Full Changelog**: https://github.com/BRO3886/ical/compare/v<PREV>...v<VERSION>
+**Full Changelog**: https://github.com/counterposition/ical/compare/v<PREV>...v<VERSION>
 ```
 
 ### Rules for Release Notes

@@ -4,53 +4,42 @@ A fast, native macOS Calendar CLI built on [go-eventkit](https://github.com/BRO3
 
 Full CRUD for calendar events, natural language dates, recurrence support, import/export, and multiple output formats — all via EventKit (3000x faster than AppleScript).
 
+> **This is a fork.** Maintained at [counterposition/ical](https://github.com/counterposition/ical),
+> tracking [BRO3886/ical](https://github.com/BRO3886/ical) upstream. It adds lint tooling
+> (`make lint`, versions pinned in `mise.toml`) and local fixes on top.
+>
+> This fork publishes **no binary releases, no Homebrew tap, and no install script** — build it
+> from source, as below. Upstream's Homebrew tap, `curl | bash` installer, `go install` path, and
+> release tarballs all install *upstream's* build, not this fork; if that is what you want, follow
+> [upstream's install instructions](https://github.com/BRO3886/ical#install).
+
 ## Install
 
-### Homebrew (recommended)
+Build from source. Requires **macOS**, **Go 1.24+**, and Xcode Command Line Tools
+(`xcode-select --install`).
 
 ```bash
-brew tap BRO3886/tap
-brew install ical
-```
-
-Update later with `brew upgrade ical`.
-
-**Quick install script:**
-
-```bash
-curl -fsSL https://ical.sidv.dev/install | bash
-```
-
-**Via Go:**
-
-```bash
-go install github.com/BRO3886/ical/cmd/ical@latest
-```
-
-> Requires Go 1.21+ and Xcode Command Line Tools (`xcode-select --install`).
-
-**Manual download:**
-
-Apple Silicon:
-```bash
-curl -sSL https://github.com/BRO3886/ical/releases/latest/download/ical-darwin-arm64.tar.gz | tar xzf -
-sudo mv ical /usr/local/bin/
-```
-
-Intel:
-```bash
-curl -sSL https://github.com/BRO3886/ical/releases/latest/download/ical-darwin-amd64.tar.gz | tar xzf -
-sudo mv ical /usr/local/bin/
-```
-
-**Build from source:**
-
-```bash
-git clone https://github.com/BRO3886/ical.git
+git clone https://github.com/counterposition/ical.git
 cd ical
 make build
 # Binary at ./bin/ical
 ```
+
+Then put it on your `PATH` — either copy the built binary:
+
+```bash
+sudo cp bin/ical /usr/local/bin/ical
+```
+
+...or install it to `$(go env GOPATH)/bin` instead:
+
+```bash
+make install
+```
+
+> `go install github.com/counterposition/ical/cmd/ical@latest` does **not** work. `go.mod` still
+> declares the module as `github.com/BRO3886/ical` — deliberately, so the fork rebases onto
+> upstream without rewriting every import — and Go rejects the module-path mismatch.
 
 **Development checks:**
 
@@ -379,7 +368,7 @@ Interactive mode uses [charmbracelet/huh](https://github.com/charmbracelet/huh) 
 
 ## AI Agent Skills
 
-ical ships with an embedded [agent skill](https://agentskills.io) that teaches AI coding agents (Claude Code, Codex CLI, OpenClaw, GitHub Copilot, Cursor, Windsurf, Augment) how to use it effectively. The skill files contain the same documentation published at [ical.sidv.dev/docs](https://ical.sidv.dev/docs).
+ical ships with an embedded [agent skill](https://agentskills.io) that teaches AI coding agents (Claude Code, Codex CLI, OpenClaw, GitHub Copilot, Cursor, Windsurf, Augment) how to use it effectively. The skill files contain the same documentation as [`website/content/docs/`](website/content/docs/) (published upstream at [ical.sidv.dev/docs](https://ical.sidv.dev/docs)).
 
 ```bash
 # Preview what would be installed (no files written)
@@ -438,7 +427,8 @@ ical/
 
 ## Documentation
 
-Full documentation is available at [ical.sidv.dev](https://ical.sidv.dev).
+This fork's docs live in [`website/content/docs/`](website/content/docs/). Upstream publishes the
+same docs at [ical.sidv.dev](https://ical.sidv.dev) — that site tracks upstream, not this fork.
 
 ## License
 
