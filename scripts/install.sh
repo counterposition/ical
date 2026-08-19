@@ -1,15 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-# ical installer — downloads the latest release tarball from GitHub.
-#
-# NOTE: this fork (counterposition/ical) publishes no binary releases, so this
-# script will not find anything to install. It is kept, pointed at the fork, so
-# it starts working if the fork ever cuts releases — and so it never silently
-# installs upstream's build in place of the fork's. Build from source instead:
-#
-#   git clone https://github.com/counterposition/ical.git
-#   cd ical && make build
+# ical installer — downloads the latest fork release from GitHub.
+# Usage: curl -fsSL https://raw.githubusercontent.com/counterposition/ical/main/scripts/install.sh | bash
 
 REPO="counterposition/ical"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
@@ -43,7 +36,7 @@ LATEST=$(curl -sSL -H "Accept: application/vnd.github+json" \
     | grep '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')
 
 if [ -z "$LATEST" ]; then
-    error "No release found for ${REPO}. This fork publishes no binaries — build from source: git clone https://github.com/${REPO}.git; cd ical; make build"
+    error "Could not determine the latest ${REPO} release"
 fi
 
 info "Latest version: $LATEST"
@@ -52,6 +45,7 @@ info "Latest version: $LATEST"
 
 ASSET_NAME="ical-darwin-${ARCH}.tar.gz"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST}/${ASSET_NAME}"
+CHECKSUM_URL="https://github.com/${REPO}/releases/download/${LATEST}/SHA256SUMS"
 
 TMPDIR_PATH=$(mktemp -d)
 trap 'rm -rf "$TMPDIR_PATH"' EXIT
@@ -61,6 +55,14 @@ HTTP_CODE=$(curl -sSL -w "%{http_code}" -o "${TMPDIR_PATH}/${ASSET_NAME}" "$DOWN
 
 if [ "$HTTP_CODE" != "200" ]; then
     error "Download failed (HTTP $HTTP_CODE). Asset '${ASSET_NAME}' may not exist for ${LATEST}."
+fi
+
+info "Verifying checksum..."
+curl -fsSL "$CHECKSUM_URL" -o "${TMPDIR_PATH}/SHA256SUMS" || error "Could not download SHA256SUMS"
+EXPECTED_SHA=$(awk -v asset="$ASSET_NAME" '$2 == asset { print $1 }' "${TMPDIR_PATH}/SHA256SUMS")
+ACTUAL_SHA=$(shasum -a 256 "${TMPDIR_PATH}/${ASSET_NAME}" | awk '{ print $1 }')
+if [ -z "$EXPECTED_SHA" ] || [ "$ACTUAL_SHA" != "$EXPECTED_SHA" ]; then
+    error "Checksum verification failed for ${ASSET_NAME}"
 fi
 
 tar -xzf "${TMPDIR_PATH}/${ASSET_NAME}" -C "${TMPDIR_PATH}"

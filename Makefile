@@ -4,7 +4,7 @@ COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
 DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 LDFLAGS=-ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.date=$(DATE)"
 
-.PHONY: all build install test lint clean completions release indexnow help
+.PHONY: all build install test lint lint-actions check-module clean completions release indexnow help
 
 all: build
 
@@ -28,6 +28,20 @@ lint: ## Run golangci-lint
 		exit 127; \
 	fi
 
+lint-actions: ## Lint and security-audit GitHub Actions workflows
+	actionlint .github/workflows/*.yml
+	zizmor --format plain .github/workflows
+
+check-module: ## Verify the fork module path and reject upstream self-imports
+	@test "$$(go list -m)" = "github.com/counterposition/ical" || { \
+		echo "go.mod must declare github.com/counterposition/ical" >&2; \
+		exit 1; \
+	}
+	@if git grep -n '"github.com/BRO3886/ical/' -- '*.go'; then \
+		echo "upstream self-imports are not allowed in the fork module" >&2; \
+		exit 1; \
+	fi
+
 release: ## Build release tarballs for GitHub upload (arm64 + amd64)
 	@mkdir -p bin
 	@for arch in arm64 amd64; do \
@@ -37,7 +51,10 @@ release: ## Build release tarballs for GitHub upload (arm64 + amd64)
 		tar -czf bin/ical-darwin-$$arch.tar.gz -C bin ical; \
 		rm bin/ical; \
 	done
-	@echo "Upload bin/ical-darwin-{arm64,amd64}.tar.gz to GitHub Releases"
+	@cd bin && shasum -a 256 \
+		ical-darwin-arm64.tar.gz \
+		ical-darwin-amd64.tar.gz > SHA256SUMS
+	@echo "Release assets are in bin/"
 
 clean: ## Remove built binaries
 	rm -rf bin/
