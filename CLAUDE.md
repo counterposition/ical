@@ -8,11 +8,11 @@ Go CLI wrapping macOS Calendar via `go-eventkit`. Native EventKit bindings for 3
 
 **Repository**: `github.com/counterposition/ical` — a fork of `github.com/BRO3886/ical` (remote `upstream`).
 
-**Install story**: **never point install instructions at upstream** — not upstream's Homebrew tap, not `ical.sidv.dev/install`, not `go install github.com/BRO3886/ical/...`, not `BRO3886/ical` release tarballs. All of those install *upstream's* build, not this fork.
+**Distribution identity**: install instructions must point to `counterposition/ical`. The fork owns its Go module path, GitHub releases, checksums, installer, and update feed. Never direct users to an upstream distribution path because that installs a different build.
 
-As of 2026-08-19 the fork publishes no releases, so the only working install is building from source (`git clone` + `make build`, or `make install` for `$(go env GOPATH)/bin`), and the docs say exactly that. Publishing fork releases is planned; when the first one lands, `scripts/install.sh` and `internal/update/check.go` already point at `counterposition/ical` and start working on their own — the docs are what need updating.
+**Module identity**: `go.mod` declares `github.com/counterposition/ical`; every self-import must use that path. `make check-module` guards against upstream self-imports returning during a rebase.
 
-`go.mod` still declares `module github.com/BRO3886/ical`, kept deliberately so the fork rebases cleanly. That is why `go install github.com/counterposition/ical/cmd/ical@latest` can never work, releases or not.
+**Version line**: fork releases begin at `v0.100.0` and use normal pre-1.0 semantic versioning. Upstream `v0.x` tags remain unchanged ancestry markers and are never published as fork releases.
 
 ## Architecture
 ```
@@ -120,7 +120,7 @@ ical/
 - **MD support**: Pages accessible as raw markdown at `/docs/page/index.md`
 - **Content**: `website/content/docs/` — getting-started, commands, date-parsing, architecture
 - **Copy buttons**: Auto-injected on code blocks in docs pages + manual on install section
-- **Install section**: Tabbed UI (Script/Go Install/Download) with copy buttons
+- **Install section**: Tabbed Go Install/Download/Source UI with copy buttons
 - **Hugo config**: `website/config.yaml` with markdown output format enabled
 
 ## IndexNow
@@ -136,18 +136,17 @@ make release                     # Build arm64+amd64 tarballs for GitHub upload
 make completions                 # bash/zsh/fish
 ```
 
-### Release Process (manual, no CI)
-1. `git push` — push all commits to main **before** tagging. Never tag unpushed commits.
-2. `git tag vX.Y.Z` — tag after push so the tag points to a commit already on remote main
-3. `git push origin vX.Y.Z` — push the tag explicitly
-4. `make release` — produces `bin/ical-darwin-{arm64,amd64}.tar.gz`
-5. `gh release create vX.Y.Z bin/ical-darwin-arm64.tar.gz bin/ical-darwin-amd64.tar.gz`
+### Release Process
+1. Run `make check-module`, `make test`, `make lint`, and `mise x -- make lint-actions`.
+2. Run `make release VERSION=vX.Y.Z` and verify the native archive reports the exact version.
+3. Push all commits to `main` **before** tagging. Never tag unpushed commits.
+4. Create and push a `v0.100+` tag. `.github/workflows/release.yml` repeats validation and publishes both architecture tarballs plus `SHA256SUMS`.
+5. Wait for the Release workflow, inspect the release, and verify `go install github.com/counterposition/ical/cmd/ical@vX.Y.Z` from a clean environment.
 
 > **Why**: tagging an unpushed commit and running `gh release create` pushes the tag + that commit to GitHub, but leaves `main` behind. The release binary is built from code not on `main` — a silent inconsistency that's hard to notice and painful to explain.
 
 ### Install Script
-- `scripts/install.sh` — curl-pipe-bash installer, `REPO` repointed to `counterposition/ical`
-- **Non-functional on this fork**: the fork has no releases, so the script exits with a "build from source" error. It is kept (rather than deleted) so it starts working if the fork ever cuts releases, and so it never silently installs upstream's binary over the fork's
+- `scripts/install.sh` — downloads the latest `counterposition/ical` release asset for the host architecture and verifies it against `SHA256SUMS`
 - `website/static/install` is a **manual byte-for-byte copy** of `scripts/install.sh` (a duplicate file, not a symlink — Hugo does not follow symlinks in `static/`). Edit `scripts/install.sh`, then `cp scripts/install.sh website/static/install`. It serves at `ical.sidv.dev/install` — that is *upstream's* domain; the fork's `deploy.yml` has no Cloudflare secrets, so the fork's website copy is never published
 
 ## Journal

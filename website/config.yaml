@@ -6,7 +6,7 @@ theme: "cal-docs"
 params:
   description: "A native Apple Calendar CLI built with Go and EventKit. 3000x faster than AppleScript. Full CRUD, natural language dates, recurrence, import/export, and multiple output formats."
   author: "Siddharth Verma"
-  github: "https://github.com/BRO3886/ical"
+  github: "https://github.com/counterposition/ical"
   ogImage: "/images/og-image.png"
   twitterHandle: "@bro3886"
   keywords:
@@ -45,7 +45,7 @@ menu:
       url: "/docs/architecture/"
       weight: 4
     - name: "GitHub"
-      url: "https://github.com/BRO3886/ical"
+      url: "https://github.com/counterposition/ical"
       weight: 5
 
 mediaTypes:

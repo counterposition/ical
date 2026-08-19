@@ -6,7 +6,7 @@
 
 `ical` is a fast, native macOS Calendar CLI built on [go-eventkit](https://github.com/BRO3886/go-eventkit). It provides full CRUD for calendar events, natural language date parsing, recurrence support, import/export, and multiple output formats — all via EventKit (3000x faster than AppleScript).
 
-**Module**: `github.com/BRO3886/ical`
+**Module**: `github.com/counterposition/ical`
 **Primary dependency**: `github.com/BRO3886/go-eventkit/calendar`
 
 ## Design Principles

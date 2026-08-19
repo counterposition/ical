@@ -145,7 +145,7 @@ latest=v0.5.0
 3. In `PersistentPostRun`, if the goroutine completed and `latest > current`:
    ```
    A new version of ical is available: v0.4.0 → v0.5.0
-   Update: git pull && make build in your ical checkout
+   Update: go install github.com/counterposition/ical/cmd/ical@latest
    ```
    Printed to **stderr** so it doesn't interfere with piped output (e.g., `ical ls -o json | jq`).
 
@@ -163,7 +163,7 @@ When skills are installed but their `.ical-version` doesn't match the running bi
 
 ```
 A new version of ical is available: v0.4.0 → v0.5.0
-Update: git pull && make build in your ical checkout
+Update: go install github.com/counterposition/ical/cmd/ical@latest
 
 Installed skills are outdated (v0.4.0). Run: ical skills install
 ```

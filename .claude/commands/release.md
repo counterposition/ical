@@ -1,133 +1,92 @@
-Create a new release for the `ical` project.
+Create a new release for the `counterposition/ical` fork.
 
-## Step 1: Analyze Changes
+## Version policy
 
-Run these commands to understand what changed since the last release:
+Fork releases start at `v0.100.0` and use normal pre-1.0 semantic versioning:
+
+- **MINOR** (`v0.X.0`): new features or breaking changes
+- **PATCH** (`v0.X.Y`): fixes, documentation, maintenance, or dependency updates
+
+The `v0.100+` range distinguishes fork releases from upstream's `v0.12.x`
+line while keeping the module compatible with Go's unsuffixed import path.
+Never retag an upstream version as a fork release.
+
+## Step 1: Analyze changes
+
+Use the latest fork release as the comparison point. For the first fork
+release, use the synchronized upstream `v0.12.2` baseline:
 
 ```bash
-git tag --sort=-v:refname | head -1   # Latest tag
-git log <latest-tag>..HEAD --oneline  # Commits since last release
-git diff <latest-tag>..HEAD --stat    # Files changed
+git tag --sort=-v:refname | head
+git log <previous-tag>..HEAD --oneline
+git diff <previous-tag>..HEAD --stat
 ```
 
-Read the commit messages carefully. Classify the release:
+Read the commits and propose a version. Confirm it before publishing unless the
+version was already specified explicitly.
 
-### Semver Rules
-- **MAJOR** (vX.0.0): Breaking changes — removed commands, renamed flags, changed default behavior, dropped compatibility
-- **MINOR** (v0.X.0): New features, new commands, new flags, new packages. No breaking changes.
-- **PATCH** (v0.0.X): Bug fixes, docs-only changes, performance improvements, dependency bumps. No new features.
-
-Look for commits prefixed with:
-- `feat(...)` → MINOR bump (or MAJOR if `feat!` or contains `BREAKING CHANGE`)
-- `fix(...)` → PATCH bump
-- `docs(...)`, `chore(...)`, `refactor(...)`, `perf(...)` → PATCH bump
-- `!` suffix or `BREAKING CHANGE` in body → MAJOR bump
-
-If the current version is pre-1.0 (v0.x.y), breaking changes bump MINOR not MAJOR.
-
-**Present the proposed version to the user and ask for confirmation before proceeding.**
-
-## Step 2: Run Tests
+## Step 2: Validate locally
 
 ```bash
-go test ./...
+make check-module
+make test
+make lint
+make release VERSION=v<VERSION>
 ```
 
-All tests must pass. Do not proceed if any test fails.
+Confirm that `bin/` contains:
 
-## Step 3: Tag and Push
+- `ical-darwin-arm64.tar.gz`
+- `ical-darwin-amd64.tar.gz`
+- `SHA256SUMS`
 
-**Tag BEFORE building** — `make release` uses `git describe --tags` to embed the version in the binary. If you build before tagging, the binary will report the wrong version (e.g. `v0.5.0-1-gabcdef` instead of `v0.5.1`).
+Extract the native archive and verify that `ical version` reports the exact
+release version.
+
+## Step 3: Push main before tagging
+
+The release tag must point to a commit already present on remote `main`:
 
 ```bash
+git push origin main
 git tag v<VERSION>
 git push origin v<VERSION>
 ```
 
-## Step 4: Build Release Binaries
+Pushing a valid `v0.100+` tag triggers `.github/workflows/release.yml`. The
+workflow repeats module validation, tests, lint, dual-architecture builds,
+archive checks, and checksum verification before publishing the GitHub release.
+
+Never tag an unpushed commit. Otherwise the release can contain code that is
+not reachable from remote `main`.
+
+## Step 4: Verify publication
+
+Wait for the Release workflow and verify:
 
 ```bash
-make release
+gh run list --workflow Release --limit 1
+gh release view v<VERSION>
 ```
 
-This produces `bin/ical-darwin-arm64.tar.gz` and `bin/ical-darwin-amd64.tar.gz`.
-
-Verify the version is correct before uploading:
+The release must be marked latest and include all three expected assets. Then
+verify both supported installation paths from clean temporary locations:
 
 ```bash
-cd /tmp && tar -xzf /path/to/bin/ical-darwin-arm64.tar.gz && ./ical version && rm ./ical
+go install github.com/counterposition/ical/cmd/ical@v<VERSION>
+curl -fsSL https://raw.githubusercontent.com/counterposition/ical/main/scripts/install.sh | bash
 ```
 
-The output must show exactly `ical v<VERSION>` with no commit suffix.
+## Release notes
 
-## Step 5: Create GitHub Release
+The workflow prepends fork-specific installation instructions and asks GitHub
+to generate the changelog since the previous fork release. For the first fork
+release it starts at upstream `v0.12.2`.
 
-Use `gh release create` with the format below. Generate the notes by analyzing the commits from Step 1.
+Release notes should remain user-facing:
 
-### Release Notes Format
-
-```
-gh release create v<VERSION> \
-  bin/ical-darwin-arm64.tar.gz \
-  bin/ical-darwin-amd64.tar.gz \
-  --title "v<VERSION>" \
-  --notes "$(cat <<'EOF'
-<RELEASE_NOTES>
-EOF
-)"
-```
-
-### Release Notes Template
-
-```markdown
-## Breaking Changes
-
-<!-- ONLY include this section if there are breaking changes. Delete entirely otherwise. -->
-
-- **<what broke>** — <migration instructions>
-
-## What's New
-
-<!-- Group related changes under descriptive subheadings. Use ### for major features, bullet points for smaller changes. -->
-
-### <Feature Name>
-
-<1-3 sentence description of what it does and why it matters.>
-
-```bash
-<example usage>
-```
-
-### Other Changes
-
-- <bullet for smaller changes: bug fixes, refactors, dep bumps>
-- <bullet>
-
-## Install / Update
-
-This fork ships no prebuilt binaries — build from source (macOS, Go 1.24+, Xcode CLT):
-
-```bash
-git clone https://github.com/counterposition/ical.git
-cd ical
-make build
-```
-
-Already have a checkout? Update in place:
-
-```bash
-git pull && make build
-```
-
-**Full Changelog**: https://github.com/counterposition/ical/compare/v<PREV>...v<VERSION>
-```
-
-### Rules for Release Notes
-
-1. **Lead with breaking changes** if any — users need to see these first
-2. **Group by feature, not by file** — users care about capabilities, not internal structure
-3. **Include code examples** for new commands or flags — show, don't just tell
-4. **Keep it scannable** — subheadings, bullets, code blocks. No prose walls.
-5. **Always end with install instructions** and full changelog link. **Homebrew (`brew upgrade ical`) is the recommended/primary update method** — list it first, with the curl script and `go install` as secondary options
-6. **No internal implementation details** — users don't care about package names or refactors unless they affect the CLI surface
-7. **Mention new env vars and flags** — these are user-facing API
+1. Lead with breaking changes when present.
+2. Group changes by capability, not by file.
+3. Include examples for new commands or flags.
+4. Mention new environment variables and flags.
+5. Avoid internal implementation details unless they affect users.

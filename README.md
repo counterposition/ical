@@ -7,16 +7,37 @@ Full CRUD for calendar events, natural language dates, recurrence support, impor
 > **This is a fork.** Maintained at [counterposition/ical](https://github.com/counterposition/ical),
 > tracking [BRO3886/ical](https://github.com/BRO3886/ical) upstream. It adds lint tooling
 > (`make lint`, versions pinned in `mise.toml`) and local fixes on top.
->
-> This fork publishes **no binary releases, no Homebrew tap, and no install script** — build it
-> from source, as below. Upstream's Homebrew tap, `curl | bash` installer, `go install` path, and
-> release tarballs all install *upstream's* build, not this fork; if that is what you want, follow
-> [upstream's install instructions](https://github.com/BRO3886/ical#install).
 
 ## Install
 
-Build from source. Requires **macOS**, **Go 1.24+**, and Xcode Command Line Tools
-(`xcode-select --install`).
+### Go install
+
+Requires **macOS**, **Go 1.24+**, and Xcode Command Line Tools (`xcode-select --install`):
+
+```bash
+go install github.com/counterposition/ical/cmd/ical@latest
+```
+
+### Prebuilt binaries
+
+Apple Silicon:
+
+```bash
+curl -sSL https://github.com/counterposition/ical/releases/latest/download/ical-darwin-arm64.tar.gz | tar xzf -
+sudo mv ical /usr/local/bin/
+```
+
+Intel:
+
+```bash
+curl -sSL https://github.com/counterposition/ical/releases/latest/download/ical-darwin-amd64.tar.gz | tar xzf -
+sudo mv ical /usr/local/bin/
+```
+
+Release checksums are published as `SHA256SUMS` on the
+[latest release](https://github.com/counterposition/ical/releases/latest).
+
+### Build from source
 
 ```bash
 git clone https://github.com/counterposition/ical.git
@@ -25,27 +46,19 @@ make build
 # Binary at ./bin/ical
 ```
 
-Then put it on your `PATH` — either copy the built binary:
+Then put it on your `PATH`:
 
 ```bash
 sudo cp bin/ical /usr/local/bin/ical
 ```
 
-...or install it to `$(go env GOPATH)/bin` instead:
-
-```bash
-make install
-```
-
-> `go install github.com/counterposition/ical/cmd/ical@latest` does **not** work. `go.mod` still
-> declares the module as `github.com/BRO3886/ical` — deliberately, so the fork rebases onto
-> upstream without rewriting every import — and Go rejects the module-path mismatch.
-
 **Development checks:**
 
 ```bash
+make check-module
 make test
 make lint
+mise x -- make lint-actions
 ```
 
 `make lint` uses pinned tools from `mise.toml` when `mise` is installed, and falls back to `golangci-lint` on `PATH`.

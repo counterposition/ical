@@ -185,10 +185,9 @@
       <details class="faq-item scroll-reveal">
         <summary class="faq-question">How do I install ical?</summary>
         <div class="faq-answer">
-          <p>This fork publishes no binaries, Homebrew tap, or install script &mdash; you build it from source. It needs macOS, Go 1.24+, and Xcode Command Line Tools:</p>
-          <pre><code>git clone https://github.com/counterposition/ical.git
-cd ical && make build</code></pre>
-          <p>That leaves the binary at <code>./bin/ical</code>. For prebuilt binaries, see <a href="https://github.com/BRO3886/ical#install">upstream&rsquo;s install instructions</a> &mdash; those install upstream&rsquo;s build, not this fork.</p>
+          <p>With Go 1.24+ and Xcode Command Line Tools:</p>
+          <pre><code>go install github.com/counterposition/ical/cmd/ical@latest</code></pre>
+          <p>Prebuilt Apple Silicon and Intel binaries are also available from <a href="https://github.com/counterposition/ical/releases/latest">GitHub Releases</a>.</p>
         </div>
       </details>
 
@@ -233,14 +232,67 @@ cd ical && make build</code></pre>
 
 <section class="install-section">
   <div class="install-inner">
-    <h2 class="section-title scroll-reveal">Build from source</h2>
-    <p class="section-subtitle scroll-reveal">Two commands. One binary.</p>
+    <h2 class="section-title scroll-reveal">Install in seconds</h2>
+    <p class="section-subtitle scroll-reveal">From Go or a prebuilt macOS binary.</p>
     <div class="install-card scroll-reveal">
-      <div class="install-panel active" data-panel="source">
+      <div class="install-tabs" role="tablist">
+        <button class="install-tab active" role="tab" aria-selected="true" data-tab="go">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+          Go Install
+        </button>
+        <button class="install-tab" role="tab" aria-selected="false" data-tab="manual">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download
+        </button>
+        <button class="install-tab" role="tab" aria-selected="false" data-tab="source">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Source
+        </button>
+      </div>
+
+      <div class="install-panel active" data-panel="go">
         <div class="install-step">
           <div class="install-cmd-block">
             <div class="install-cmd-header">
               <span class="install-cmd-label">Requires macOS, Go 1.24+ &amp; Xcode CLT</span>
+              <button class="install-copy-btn" data-copy="go install github.com/counterposition/ical/cmd/ical@latest" aria-label="Copy">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              </button>
+            </div>
+            <div class="install-cmd-body">
+              <span class="install-prompt">$</span>
+              <code>go install github.com/counterposition/ical/cmd/ical@latest</code>
+            </div>
+          </div>
+          <span class="install-note">Compiles the latest fork release into <code>$(go env GOPATH)/bin</code>.</span>
+        </div>
+      </div>
+
+      <div class="install-panel" data-panel="manual">
+        <div class="install-step">
+          <div class="install-cmd-block">
+            <div class="install-cmd-header">
+              <span class="install-cmd-label">Apple Silicon</span>
+              <button class="install-copy-btn" data-copy="curl -LO https://github.com/counterposition/ical/releases/latest/download/ical-darwin-arm64.tar.gz &amp;&amp; tar xzf ical-darwin-arm64.tar.gz &amp;&amp; sudo mv ical /usr/local/bin/ical" aria-label="Copy">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              </button>
+            </div>
+            <div class="install-cmd-body install-cmd-body-multi">
+              <span class="install-prompt">$</span>
+              <code>curl -LO https://github.com/counterposition/ical/releases/latest/download/ical-darwin-arm64.tar.gz
+tar xzf ical-darwin-arm64.tar.gz
+sudo mv ical /usr/local/bin/ical</code>
+            </div>
+          </div>
+          <span class="install-note">Replace <code>arm64</code> with <code>amd64</code> for Intel Macs. Each release includes <code>SHA256SUMS</code>.</span>
+        </div>
+      </div>
+
+      <div class="install-panel" data-panel="source">
+        <div class="install-step">
+          <div class="install-cmd-block">
+            <div class="install-cmd-header">
+              <span class="install-cmd-label">Build the current main branch</span>
               <button class="install-copy-btn" data-copy="git clone https://github.com/counterposition/ical.git &amp;&amp; cd ical &amp;&amp; make build" aria-label="Copy">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
               </button>
@@ -252,26 +304,8 @@ cd ical
 make build</code>
             </div>
           </div>
-          <span class="install-note">Compiles EventKit via cgo into a single binary at <code>./bin/ical</code>. Needs Xcode CLT for the EventKit framework headers.</span>
+          <span class="install-note">Produces a single binary at <code>./bin/ical</code>.</span>
         </div>
-
-        <div class="install-step">
-          <div class="install-cmd-block">
-            <div class="install-cmd-header">
-              <span class="install-cmd-label">Then put it on your PATH</span>
-              <button class="install-copy-btn" data-copy="sudo cp bin/ical /usr/local/bin/ical" aria-label="Copy">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-              </button>
-            </div>
-            <div class="install-cmd-body">
-              <span class="install-prompt">$</span>
-              <code>sudo cp bin/ical /usr/local/bin/ical</code>
-            </div>
-          </div>
-          <span class="install-note">Or run <code>make install</code> to install into <code>$(go env GOPATH)/bin</code> instead.</span>
-        </div>
-
-        <span class="install-note">This is a fork of <a href="https://github.com/BRO3886/ical">BRO3886/ical</a> with no binary releases of its own. Upstream&rsquo;s Homebrew tap, install script, <code>go install</code> path, and release tarballs all install <em>upstream&rsquo;s</em> build &mdash; see <a href="https://github.com/BRO3886/ical#install">upstream&rsquo;s install instructions</a> for those.</span>
       </div>
     </div>
   </div>
