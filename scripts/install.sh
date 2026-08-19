@@ -1,10 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
-# ical installer — downloads the latest release from GitHub
-# Usage: curl -fsSL https://ical.sidv.dev/install | bash
+# ical installer — downloads the latest release tarball from GitHub.
+#
+# NOTE: this fork (counterposition/ical) publishes no binary releases, so this
+# script will not find anything to install. It is kept, pointed at the fork, so
+# it starts working if the fork ever cuts releases — and so it never silently
+# installs upstream's build in place of the fork's. Build from source instead:
+#
+#   git clone https://github.com/counterposition/ical.git
+#   cd ical && make build
 
-REPO="BRO3886/ical"
+REPO="counterposition/ical"
 INSTALL_DIR="${INSTALL_DIR:-/usr/local/bin}"
 BINARY_NAME="ical"
 
@@ -36,7 +43,7 @@ LATEST=$(curl -sSL -H "Accept: application/vnd.github+json" \
     | grep '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')
 
 if [ -z "$LATEST" ]; then
-    error "Could not determine latest release"
+    error "No release found for ${REPO}. This fork publishes no binaries — build from source: git clone https://github.com/${REPO}.git; cd ical; make build"
 fi
 
 info "Latest version: $LATEST"
@@ -79,4 +86,4 @@ fi
 
 echo ""
 info "Tip: ical ships with an AI agent skill for Claude Code, Codex, etc."
-info "Run 'ical skills install' to set it up. Details: https://ical.sidv.dev/docs/commands/#ical-skills"
+info "Run 'ical skills install' to set it up. Details: ical skills install --help"
